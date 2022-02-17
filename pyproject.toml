@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "response-measurer"
+version = "0.1.0"
+description = "A simple python HTTP request response measurer"
+authors = ["eminaktas <eminaktas34@gmail.com>"]
+license = "MIT License"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.27.1"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+response-measurer = "response_measurer.run:run"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
