@@ -1,34 +1,26 @@
 import requests
 import logging
-from response_measurer.calculaters import *
+from response_measurer.methods import Methods
 
 
-class Post:
-    def __init__(self, parameters: dict):
-        self.parameters = parameters
+class Post(Methods):
+    def __init__(self):
+        super(Post, self).__init__()
 
-    def send_post_request(self):
+    @staticmethod
+    def send_request(parameters: dict):
         try:
+            logging.debug("POST request started")
             values_list = []
-            for i in range(self.parameters["loop_count"]):
+            for i in range(parameters["loop_count"]):
                 response = requests.post(
-                    self.parameters["host"],
-                    data=self.parameters["data"],
-                    timeout=self.parameters["timeout"]
+                    parameters["host"],
+                    data=parameters["data"],
+                    timeout=parameters["timeout"]
                 )
                 values_list.append(response.elapsed.total_seconds())
-            return values_list
+            logging.debug("POST request finished")
+            return Methods.calculate(values_list)
         except Exception as e:
             logging.error(e)
             exit(1)
-
-    def run(self):
-        values = self.send_post_request()
-        # Calculate mean
-        mean = calculate_mean(values)
-        logging.info(f"Mean of the POST requests: {mean:.5f}")
-        # Percentile %50
-        p50 = calculate_percentile(values, 0.5)
-        logging.info(f"Percentile %50 of the POST requests: {p50:.5f}")
-        p99 = calculate_percentile(values, 0.99)
-        logging.info(f"Percentile %99 of the POST requests: {p99:.5f}")
