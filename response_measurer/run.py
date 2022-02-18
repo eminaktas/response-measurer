@@ -75,13 +75,18 @@ def get_log_level(_log_level: str):
     return numeric_level
 
 
-if __name__ == '__main__':
+def main():
     parameters = parse_args()
-    log_level = get_log_level(parameters["log_level"])
+    log_level_str = parameters["log_level"]
+    log_level = get_log_level(log_level_str)
+    if log_level_str == "INFO":
+        _format = '%(asctime)s: %(message)s'
+    else:
+        _format = '%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s'
     # Configure logging
     logging.basicConfig(
         level=log_level,
-        format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+        format=_format,
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     Run(parameters).run()
