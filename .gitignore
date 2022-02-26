@@ -1,4 +1,8 @@
 venv
 dist
 .idea
+.tox
+.coverage
+cover
+coverage.xml
 response_measurer/__pycache__/

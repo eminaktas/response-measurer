@@ -13,4 +13,4 @@ def calculate_percentile(n: list, p: float):
     @return - The percentile of the values.
     """
     k = int(round(p * len(n) + 0.5))
-    return n[k-1]
+    return n[k - 1]

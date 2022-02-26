@@ -17,7 +17,7 @@ class PrintOut:
         return {
             "time": self.time if not no_time else None,
             "name": self.generate_name(),
-            "method": self.method
+            "method": self.method,
         }
 
     def generate_name(self):
@@ -54,9 +54,11 @@ class PrintCsv(PrintOut):
 
             field_names = self.extract_headers(_datas[0])
 
-            file_name = f"{os.getcwd()}/{self.method.lower()}-request-{self.time}-{result_type}"
+            file_name = (
+                f"{os.getcwd()}/{self.method.lower()}-request-{self.time}-{result_type}"
+            )
 
-            with open(file_name, 'w', encoding='UTF8') as f:
+            with open(file_name, "w", encoding="UTF8") as f:
                 writer = csv.DictWriter(f, fieldnames=field_names)
                 writer.writeheader()
                 datas_list = _datas

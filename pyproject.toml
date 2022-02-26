@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "response-measurer"
-version = "0.3.0"
-description = "A simple python HTTP request response measurer"
+version = "0.4.1"
+description = "A HTTP request response measurer"
 authors = ["eminaktas <eminaktas34@gmail.com>"]
 license = "MIT License"
 
