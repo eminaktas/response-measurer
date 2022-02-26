@@ -4,23 +4,30 @@ from response_measurer.methods import Methods
 
 
 class Post(Methods):
-    def __init__(self):
-        super(Post, self).__init__()
+    def __init__(self, host: str, data: str, timeout: float, loop_count: int):
+        super(Post, self).__init__(host, data, timeout, loop_count)
 
-    @staticmethod
-    def send_request(parameters: dict):
+    def send_request(self):
         try:
             logging.debug("POST request started")
-            values_list = []
-            for i in range(parameters["loop_count"]):
+            results = []
+            all_results = []
+            for i in range(self.loop_count):
                 response = requests.post(
-                    parameters["host"],
-                    data=parameters["data"],
-                    timeout=parameters["timeout"]
+                    self.host,
+                    data=self.data,
+                    timeout=self.timeout
                 )
-                values_list.append(response.elapsed.total_seconds())
+                result = response.elapsed.total_seconds()
+                all_results.append(
+                    {
+                        "time": self.time(),
+                        "result": result
+                    }
+                )
+                results.append(result)
             logging.debug("POST request finished")
-            return Methods.calculate(values_list)
+            return Methods.calculate(results), all_results
         except Exception as e:
             logging.error(e)
             exit(1)

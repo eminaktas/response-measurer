@@ -1,27 +1,30 @@
 import abc
-import requests
-import logging
+
+from datetime import datetime
 from response_measurer.calculaters import *
 
 
 class Methods:
-    def __init__(self):
-        """
-        TODO: fill here
-        """
+    def __init__(self, host: str, data: str, timeout: float, loop_count: int):
+        self.host = host
+        self.data = data
+        self.timeout = timeout
+        self.loop_count = loop_count
 
-    @staticmethod
     @abc.abstractmethod
-    def send_request(parameters: dict):
+    def send_request(self):
         """
         Implements the HTTP request based on the type
         :return: numerical list
         """
 
     @staticmethod
+    def time():
+        return datetime.now().isoformat()
+
+    @staticmethod
     def calculate(values):
-        # For now, we are just calculating values for one row.
-        # values_list = []
+        values_list = []
         values_dict = {}
         # Calculate mean
         mean = calculate_mean(values)
@@ -44,4 +47,5 @@ class Methods:
                 "P99": p99
             }
         )
-        return values_dict
+        values_list.append(values_dict)
+        return values_list

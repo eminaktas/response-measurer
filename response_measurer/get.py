@@ -4,21 +4,9 @@ from response_measurer.methods import Methods
 
 
 class Get(Methods):
-    def __init__(self):
-        super(Get, self).__init__()
+    def __init__(self, host: str, data: str, timeout: float, loop_count: int):
+        super(Get, self).__init__(host, data, timeout, loop_count)
 
-    @staticmethod
-    def send_request(parameters: dict):
+    def send_request(self):
         logging.warning("GET method is not implemented")
         exit(1)
-        try:
-            logging.debug("GET request started")
-            values_list = []
-            for i in range(parameters["loop_count"]):
-                # TODO: To be done
-                print("TODO")
-            logging.debug("GET request finished")
-            return Methods.calculate(values_list)
-        except Exception as e:
-            logging.error(e)
-            exit(1)

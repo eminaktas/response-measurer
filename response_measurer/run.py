@@ -3,24 +3,46 @@ import argparse
 
 from response_measurer.post import Post
 from response_measurer.get import Get
-from response_measurer.print_out import *
+from response_measurer.print_out import (
+    PrintCsv,
+    PrintTerminal
+)
 from response_measurer import version
 
 
 class Run:
     def __init__(self, _parameters):
-        self.parameters = _parameters
+        self.requests_type = _parameters["request_type"]
+        self.host = _parameters["host"]
+        self.data = _parameters["data"]
+        self.output = _parameters["output"]
+        self.timeout = _parameters["timeout"]
+        self.loop_count = _parameters["loop_count"]
 
-        self.post_method = Post()
-        self.get_method = Get()
+        self.post_method = Post(
+            self.host,
+            self.data,
+            self.timeout,
+            self.loop_count,
+        )
+        self.get_method = Get(
+            self.host,
+            self.data,
+            self.timeout,
+            self.loop_count,
+        )
 
         self.method_map = {
             "post": self.post_method,
             "get": self.get_method,
         }
 
-        self.print_csv = PrintCsv
-        self.print_terminal = PrintTerminal
+        self.print_csv = PrintCsv(
+            self.requests_type,
+        )
+        self.print_terminal = PrintTerminal(
+            self.requests_type,
+        )
 
         self.print_map = {
             "csv": self.print_csv,
@@ -30,9 +52,9 @@ class Run:
     def run(self):
         logging.info("response_measurer started")
         # Start the benchmark
-        var = self.method_map[self.parameters["request_type"]].send_request(self.parameters)
+        calculated_results, all_results = self.method_map[self.requests_type].send_request()
         # Get the calculated results and print
-        self.print_map[self.parameters["output"]].print(var)
+        self.print_map[self.output].print(calculated_results, all_results)
 
 
 def parse_args():
@@ -48,9 +70,9 @@ def parse_args():
                                  type=float, help='Enter a timeout. Default value is 60 seconds')
     argument_parser.add_argument('--output', dest='output', required=False, type=str, default='print',
                                  help='Output format. Supports: print|csv')
-    argument_parser.add_argument('--log-level', dest='log_level', required=False, default='INFO', type=str,
+    argument_parser.add_argument('--log-level', dest='log_level', required=False, default=None, type=str,
                                  help='Define log level [INFO,DEBUG,WARN,WARNING,CRITICAL,ERROR,FATAL]. '
-                                      'Default is INFO')
+                                      'It won\'t show any log until you define a log level.')
 
     # SUB PARSER
     sub_argument_parsers = argument_parser.add_subparsers(
@@ -68,18 +90,16 @@ def parse_args():
     return args
 
 
-def get_log_level(_log_level: str):
-    numeric_level = getattr(logging, _log_level.upper(), None)
-    if not isinstance(numeric_level, int):
-        raise ValueError(f"Invalid log level: {_log_level}")
-    return numeric_level
-
-
-def main():
-    parameters = parse_args()
-    log_level_str = parameters["log_level"]
-    log_level = get_log_level(log_level_str)
-    if log_level_str == "INFO":
+def set_log_settings(_log_level: str):
+    def get_log_level():
+        numeric_level = getattr(logging, _log_level.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError(f"Invalid log level: {_log_level}")
+        return numeric_level
+    log_level = None
+    if _log_level:
+        log_level = get_log_level()
+    if _log_level == "INFO":
         _format = '%(asctime)s: %(message)s'
     else:
         _format = '%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s'
@@ -89,4 +109,9 @@ def main():
         format=_format,
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-    Run(parameters).run()
+
+
+def main():
+    _parameters = parse_args()
+    set_log_settings(_parameters.get("log_level"))
+    Run(_parameters).run()
